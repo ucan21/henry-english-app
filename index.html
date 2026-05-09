@@ -9,889 +9,377 @@
 <meta name="apple-mobile-web-app-title" content="헨리 영어">
 <link rel="manifest" href="manifest.json">
 <title>헨리의 영어 학습</title>
-
 <style>
-  :root {
-    --green: #1D9E75;
-    --green-dark: #0F6E56;
-    --green-deep: #085041;
-    --green-light: #E1F5EE;
-    --green-pale: #F0FBF7;
-    --text-primary: #1a1a1a;
-    --text-secondary: #5a5a5a;
-    --text-tertiary: #9a9a9a;
-    --bg: #F7F8FA;
-    --surface: #FFFFFF;
-    --border: rgba(0,0,0,0.08);
-    --border-med: rgba(0,0,0,0.12);
-    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-    --radius-sm: 10px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
+:root{--green:#1D9E75;--green-dark:#0F6E56;--green-deep:#085041;--green-light:#E1F5EE;--green-pale:#F0FBF7;--text-primary:#1a1a1a;--text-secondary:#5a5a5a;--text-tertiary:#9a9a9a;--bg:#F7F8FA;--surface:#FFFFFF;--border:rgba(0,0,0,0.08);--border-med:rgba(0,0,0,0.12);--shadow-sm:0 1px 4px rgba(0,0,0,0.06);--radius-sm:10px;--radius-md:14px;--radius-lg:20px;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);}
+@media(prefers-color-scheme:dark){:root{--green:#2CC690;--green-dark:#1D9E75;--green-deep:#9FE1CB;--green-light:#0a2e22;--green-pale:#081c15;--text-primary:#f0f0f0;--text-secondary:#a0a0a0;--text-tertiary:#606060;--bg:#0f0f0f;--surface:#1a1a1a;--border:rgba(255,255,255,0.08);--border-med:rgba(255,255,255,0.14);--shadow-sm:0 1px 4px rgba(0,0,0,0.3);}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:-apple-system,'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text-primary);overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100dvh;}
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --green: #2CC690;
-      --green-dark: #1D9E75;
-      --green-deep: #9FE1CB;
-      --green-light: #0a2e22;
-      --green-pale: #081c15;
-      --text-primary: #f0f0f0;
-      --text-secondary: #a0a0a0;
-      --text-tertiary: #606060;
-      --bg: #0f0f0f;
-      --surface: #1a1a1a;
-      --border: rgba(255,255,255,0.08);
-      --border-med: rgba(255,255,255,0.14);
-      --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
-    }
-  }
+/* SETUP OVERLAY */
+#setupOverlay{position:fixed;inset:0;z-index:999;background:var(--green-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;overflow-y:auto;}
+.setup-logo{font-size:52px;margin-bottom:12px;text-align:center;}
+.setup-title{font-size:22px;font-weight:700;color:white;margin-bottom:6px;text-align:center;}
+.setup-sub{font-size:14px;color:rgba(255,255,255,0.75);text-align:center;line-height:1.6;margin-bottom:24px;}
+.setup-card{background:white;border-radius:20px;padding:22px;width:100%;max-width:360px;}
+.setup-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.setup-step:last-of-type{border-bottom:none;margin-bottom:18px;padding-bottom:0;}
+.setup-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#0F6E56;color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.setup-step-text{font-size:13px;color:#333;line-height:1.65;}
+.setup-step-text b{color:#0F6E56;}
+.setup-step-text a{color:#0F6E56;font-weight:600;text-decoration:underline;}
+.setup-input-wrap{position:relative;margin-bottom:10px;}
+.setup-input{width:100%;padding:14px 44px 14px 14px;font-size:14px;border-radius:12px;border:1.5px solid #ddd;background:#f9f9f9;color:#333;outline:none;transition:border 0.15s;-webkit-appearance:none;}
+.setup-input:focus{border-color:#0F6E56;background:white;}
+.setup-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#999;padding:4px;}
+.setup-save-btn{width:100%;padding:15px;font-size:16px;font-weight:700;border-radius:12px;border:none;background:#0F6E56;color:white;cursor:pointer;-webkit-appearance:none;}
+.setup-save-btn:active{opacity:0.85;}
+.setup-err{font-size:12px;color:#e74c3c;margin-top:6px;display:none;text-align:center;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* HEADER */
+.app-header{background:var(--green-dark);color:white;padding:calc(var(--safe-top) + 14px) 20px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.app-header h1{font-size:18px;font-weight:600;flex:1;}
+.header-sub{font-size:11px;opacity:0.75;margin-top:1px;}
+.header-icon{font-size:28px;}
+.key-btn{background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap;}
 
-  html, body {
-    height: 100%;
-    font-family: -apple-system, 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    overflow: hidden;
-  }
-
-  /* ── APP SHELL ── */
-  #app { display: flex; flex-direction: column; height: 100dvh; }
-
-  /* ── HEADER ── */
-  .app-header {
-    background: var(--green-dark);
-    color: white;
-    padding: calc(var(--safe-top) + 14px) 20px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .app-header h1 { font-size: 18px; font-weight: 600; flex: 1; }
-  .header-sub { font-size: 11px; opacity: 0.75; margin-top: 1px; }
-  .header-icon { font-size: 28px; }
-
-  /* ── SCROLL BODY ── */
-  .app-body {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 16px 16px calc(var(--safe-bottom) + 80px);
-  }
-
-  /* ── TOPIC CHIPS ── */
-  .topic-section { margin-bottom: 16px; }
-  .section-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 8px; }
-  .chips { display: flex; gap: 7px; flex-wrap: wrap; }
-  .chip {
-    font-size: 13px;
-    padding: 7px 14px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border-med);
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .chip.active {
-    background: var(--green);
-    color: white;
-    border-color: var(--green);
-  }
-
-  /* ── GENERATE BTN ── */
-  .gen-btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    border: none;
-    background: var(--green);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(29,158,117,0.35);
-    transition: all 0.15s;
-    -webkit-appearance: none;
-  }
-  .gen-btn:active { transform: scale(0.97); box-shadow: none; }
-  .gen-btn:disabled { background: #ccc; box-shadow: none; color: #888; }
-  .gen-btn svg { width: 20px; height: 20px; }
-
-  /* ── LOADING ── */
-  .loading-card {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: 36px 20px;
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-  }
-  .spinner {
-    width: 44px; height: 44px;
-    border: 3px solid var(--border);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.85s linear infinite;
-    margin: 0 auto 16px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .loading-sub { font-size: 13px; color: var(--text-secondary); }
-
-  /* ── ERROR ── */
-  .error-card {
-    background: #FFF0F0;
-    border: 1px solid #FFBCBC;
-    border-radius: var(--radius-md);
-    padding: 16px;
-    font-size: 14px;
-    color: #c0392b;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  @media (prefers-color-scheme: dark) {
-    .error-card { background: #2a1010; border-color: #5a2020; color: #ff8080; }
-  }
-
-  /* ── LESSON HEADER ── */
-  .lesson-header {
-    background: var(--green-dark);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    color: white;
-    margin-bottom: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-  .lesson-header::before {
-    content: '';
-    position: absolute;
-    right: -20px; top: -20px;
-    width: 120px; height: 120px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 50%;
-  }
-  .lesson-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.2);
-    margin-bottom: 8px;
-    letter-spacing: 0.03em;
-  }
-  .lesson-title-en { font-size: 19px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
-  .lesson-title-ko { font-size: 13px; opacity: 0.8; }
-
-  /* ── STEP TABS ── */
-  .step-tabs {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    margin-bottom: 14px;
-    scrollbar-width: none;
-  }
-  .step-tabs::-webkit-scrollbar { display: none; }
-  .step-tab {
-    flex-shrink: 0;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 8px 13px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border-med);
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .step-tab.active {
-    background: var(--green);
-    color: white;
-    border-color: var(--green);
-  }
-
-  /* ── CARDS ── */
-  .card {
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    margin-bottom: 10px;
-    box-shadow: var(--shadow-sm);
-    border: 0.5px solid var(--border);
-  }
-  .card-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--green);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .en-text { font-size: 16px; line-height: 1.85; color: var(--text-primary); font-weight: 500; }
-  .ko-text { font-size: 13px; line-height: 1.8; color: var(--text-secondary); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-
-  /* sentence blocks */
-  .sblock {
-    background: var(--bg);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    margin-bottom: 8px;
-    border: 0.5px solid var(--border);
-  }
-  .sblock:last-child { margin-bottom: 0; }
-  .sblock-num { font-size: 10px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 4px; }
-  .sblock-logic { font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; }
-  .sblock-script { font-size: 14px; font-weight: 500; color: var(--text-primary); line-height: 1.6; margin-bottom: 4px; }
-  .sblock-guide { font-size: 13px; color: var(--green); }
-
-  /* vocab rows */
-  .vocab-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .vocab-row:last-child { border-bottom: none; padding-bottom: 0; }
-  .vocab-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
-  .vocab-word { font-size: 15px; font-weight: 700; color: var(--text-primary); }
-  .vocab-pron { font-size: 12px; color: var(--green); font-weight: 600; }
-  .vocab-meaning { font-size: 13px; color: var(--text-secondary); }
-  .vocab-example { font-size: 12px; color: var(--text-tertiary); margin-top: 3px; font-style: italic; }
-  .vocab-collocate { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
-
-  /* analysis rows */
-  .analysis-row { padding: 9px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
-  .analysis-row:last-child { border-bottom: none; }
-  .analysis-num {
-    flex-shrink: 0;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--green-light);
-    color: var(--green-dark);
-    font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .analysis-content { flex: 1; min-width: 0; }
-  .analysis-chunk { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-  .analysis-tr { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
-  .analysis-syntax { font-size: 11px; color: var(--green); background: var(--green-pale); border-radius: 4px; padding: 2px 6px; display: inline-block; }
-
-  /* phonetics */
-  .phon-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .phon-row:last-child { border-bottom: none; }
-  .phon-icon {
-    flex-shrink: 0;
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-  }
-  .phon-label { font-size: 11px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
-  .phon-text { font-size: 13px; color: var(--text-primary); line-height: 1.55; }
-
-  /* writing */
-  .writing-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .writing-row:last-child { border-bottom: none; }
-  .writing-level { font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
-  .writing-ko { font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; }
-  .writing-en { font-size: 13px; color: var(--text-primary); font-weight: 500; padding: 8px 10px; background: var(--bg); border-radius: 8px; border-left: 3px solid var(--green); line-height: 1.6; }
-
-  /* QA */
-  .qa-q { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; line-height: 1.5; }
-  .qa-a { font-size: 13px; color: var(--text-secondary); line-height: 1.75; }
-
-  /* meta */
-  .meta-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .meta-row:last-child { border-bottom: none; }
-  .meta-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-top: 5px; }
-  .meta-label { font-size: 11px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
-  .meta-text { font-size: 13px; color: var(--text-primary); line-height: 1.6; }
-
-  .summary-banner {
-    background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
-    border-radius: var(--radius-md);
-    padding: 16px;
-    margin-top: 4px;
-  }
-  .summary-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.65); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
-  .summary-quote { font-size: 14px; color: white; line-height: 1.7; font-style: italic; }
-
-  /* ── BOTTOM NAV ── */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    padding-bottom: var(--safe-bottom);
-    z-index: 100;
-  }
-  .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 4px 6px;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: none;
-    background: none;
-    color: var(--text-tertiary);
-    gap: 3px;
-  }
-  .nav-item.active { color: var(--green); }
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-item span { font-size: 10px; font-weight: 600; }
-
-  /* step panel visibility */
-  .step-panel { display: none; }
-  .step-panel.active { display: block; }
-
-  /* ── NEXT STEP BTN ── */
-  .next-step-btn {
-    width: 100%;
-    padding: 14px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    border: 1.5px solid var(--green);
-    background: var(--green-pale);
-    color: var(--green-dark);
-    cursor: pointer;
-    margin-top: 4px;
-    transition: all 0.15s;
-  }
-  .next-step-btn:active { background: var(--green-light); }
-
-  /* ── SCREEN views ── */
-  .screen { display: none; }
-  .screen.active { display: block; }
-
-  .empty-state {
-    text-align: center;
-    padding: 48px 20px;
-    color: var(--text-tertiary);
-  }
-  .empty-emoji { font-size: 52px; margin-bottom: 12px; }
-  .empty-title { font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
-  .empty-sub { font-size: 13px; line-height: 1.6; }
-
-  /* ── HISTORY screen ── */
-  .history-item {
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    border: 0.5px solid var(--border);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.12s;
-  }
-  .history-item:active { transform: scale(0.98); }
-  .history-circle {
-    width: 40px; height: 40px;
-    border-radius: 12px;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-  .history-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-  .history-sub { font-size: 12px; color: var(--text-secondary); }
-  .history-date { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
-
-  /* pulse animation on gen btn icon */
-  .pulse-ring {
-    display: inline-block;
-    animation: pulse-scale 1.6s ease-in-out infinite;
-  }
-  @keyframes pulse-scale { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+/* BODY */
+.app-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(var(--safe-bottom) + 80px);}
+.topic-section{margin-bottom:16px;}
+.section-label{font-size:11px;font-weight:600;color:var(--text-tertiary);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;}
+.chips{display:flex;gap:7px;flex-wrap:wrap;}
+.chip{font-size:13px;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border-med);background:var(--surface);color:var(--text-secondary);cursor:pointer;transition:all 0.15s;font-weight:500;white-space:nowrap;}
+.chip.active{background:var(--green);color:white;border-color:var(--green);}
+.gen-btn{width:100%;padding:16px;font-size:16px;font-weight:600;border-radius:var(--radius-md);border:none;background:var(--green);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;box-shadow:0 4px 12px rgba(29,158,117,0.35);transition:all 0.15s;-webkit-appearance:none;}
+.gen-btn:active{transform:scale(0.97);box-shadow:none;}
+.gen-btn:disabled{background:#ccc;box-shadow:none;color:#888;}
+.loading-card{background:var(--surface);border-radius:var(--radius-lg);padding:36px 20px;text-align:center;box-shadow:var(--shadow-sm);}
+.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.85s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-title{font-size:15px;font-weight:600;margin-bottom:4px;}
+.loading-sub{font-size:13px;color:var(--text-secondary);}
+.error-card{background:#FFF0F0;border:1px solid #FFBCBC;border-radius:var(--radius-md);padding:16px;font-size:14px;color:#c0392b;display:flex;gap:10px;align-items:flex-start;}
+@media(prefers-color-scheme:dark){.error-card{background:#2a1010;border-color:#5a2020;color:#ff8080;}}
+.lesson-header{background:var(--green-dark);border-radius:var(--radius-lg);padding:20px;color:white;margin-bottom:12px;position:relative;overflow:hidden;}
+.lesson-header::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,0.07);border-radius:50%;}
+.lesson-badge{display:inline-block;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.2);margin-bottom:8px;}
+.lesson-title-en{font-size:19px;font-weight:700;line-height:1.3;margin-bottom:4px;}
+.lesson-title-ko{font-size:13px;opacity:0.8;}
+.step-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
+.step-tabs::-webkit-scrollbar{display:none;}
+.step-tab{flex-shrink:0;font-size:12px;font-weight:600;padding:8px 13px;border-radius:20px;border:1.5px solid var(--border-med);background:var(--surface);color:var(--text-secondary);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.step-tab.active{background:var(--green);color:white;border-color:var(--green);}
+.card{background:var(--surface);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:0.5px solid var(--border);}
+.card-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
+.en-text{font-size:16px;line-height:1.85;color:var(--text-primary);font-weight:500;}
+.ko-text{font-size:13px;line-height:1.8;color:var(--text-secondary);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.sblock{background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;border:0.5px solid var(--border);}
+.sblock:last-child{margin-bottom:0;}
+.sblock-num{font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:4px;}
+.sblock-logic{font-size:11px;color:var(--text-tertiary);margin-bottom:6px;}
+.sblock-script{font-size:14px;font-weight:500;color:var(--text-primary);line-height:1.6;margin-bottom:4px;}
+.sblock-guide{font-size:13px;color:var(--green);}
+.vocab-row{padding:10px 0;border-bottom:1px solid var(--border);}
+.vocab-row:last-child{border-bottom:none;padding-bottom:0;}
+.vocab-top{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.vocab-word{font-size:15px;font-weight:700;color:var(--text-primary);}
+.vocab-pron{font-size:12px;color:var(--green);font-weight:600;}
+.vocab-meaning{font-size:13px;color:var(--text-secondary);}
+.vocab-example{font-size:12px;color:var(--text-tertiary);margin-top:3px;font-style:italic;}
+.vocab-collocate{font-size:11px;color:var(--text-tertiary);margin-top:2px;}
+.analysis-row{padding:9px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;}
+.analysis-row:last-child{border-bottom:none;}
+.analysis-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--green-light);color:var(--green-dark);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.analysis-content{flex:1;min-width:0;}
+.analysis-chunk{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;}
+.analysis-tr{font-size:12px;color:var(--text-secondary);margin-bottom:2px;}
+.analysis-syntax{font-size:11px;color:var(--green);background:var(--green-pale);border-radius:4px;padding:2px 6px;display:inline-block;}
+.phon-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.phon-row:last-child{border-bottom:none;}
+.phon-icon{flex-shrink:0;width:32px;height:32px;border-radius:8px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.phon-label{font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;}
+.phon-text{font-size:13px;color:var(--text-primary);line-height:1.55;}
+.writing-row{padding:10px 0;border-bottom:1px solid var(--border);}
+.writing-row:last-child{border-bottom:none;}
+.writing-level{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+.writing-ko{font-size:13px;color:var(--text-secondary);margin-bottom:5px;}
+.writing-en{font-size:13px;color:var(--text-primary);font-weight:500;padding:8px 10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--green);line-height:1.6;}
+.qa-q{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px;line-height:1.5;}
+.qa-a{font-size:13px;color:var(--text-secondary);line-height:1.75;}
+.meta-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.meta-row:last-child{border-bottom:none;}
+.meta-dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:5px;}
+.meta-label{font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;}
+.meta-text{font-size:13px;color:var(--text-primary);line-height:1.6;}
+.summary-banner{background:linear-gradient(135deg,var(--green-dark),var(--green-deep));border-radius:var(--radius-md);padding:16px;margin-top:4px;}
+.summary-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+.summary-quote{font-size:14px;color:white;line-height:1.7;font-style:italic;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-bottom);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 6px;cursor:pointer;transition:all 0.15s;border:none;background:none;color:var(--text-tertiary);gap:3px;}
+.nav-item.active{color:var(--green);}
+.nav-item svg{width:22px;height:22px;}
+.nav-item span{font-size:10px;font-weight:600;}
+.step-panel{display:none;}
+.step-panel.active{display:block;}
+.screen{display:none;}
+.screen.active{display:block;}
+.next-step-btn{width:100%;padding:14px;font-size:14px;font-weight:600;border-radius:var(--radius-md);border:1.5px solid var(--green);background:var(--green-pale);color:var(--green-dark);cursor:pointer;margin-top:4px;transition:all 0.15s;-webkit-appearance:none;}
+.next-step-btn:active{background:var(--green-light);}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-tertiary);}
+.empty-emoji{font-size:52px;margin-bottom:12px;}
+.empty-title{font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;}
+.empty-sub{font-size:13px;line-height:1.6;}
+.history-item{background:var(--surface);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;border:0.5px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.12s;}
+.history-item:active{transform:scale(0.98);}
+.history-circle{width:40px;height:40px;border-radius:12px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.history-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:2px;}
+.history-sub{font-size:12px;color:var(--text-secondary);}
+.history-date{font-size:11px;color:var(--text-tertiary);margin-top:2px;}
+.pulse-ring{display:inline-block;animation:pulse-scale 1.6s ease-in-out infinite;}
+@keyframes pulse-scale{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- HEADER -->
-  <header class="app-header">
-    <span class="header-icon">📖</span>
-    <div>
-      <h1>헨리의 영어 학습</h1>
-      <div class="header-sub">AI 기반 8단계 심층 학습</div>
+<!-- ══ API KEY SETUP ══ -->
+<div id="setupOverlay">
+  <div class="setup-logo">📖</div>
+  <div class="setup-title">헨리의 영어 학습</div>
+  <div class="setup-sub">API 키를 한 번만 입력하면<br>이후엔 바로 학습 시작!</div>
+  <div class="setup-card">
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div class="setup-step-text">
+        아래 링크를 열어 로그인<br>
+        <a href="https://console.anthropic.com/settings/keys" target="_blank">🔗 console.anthropic.com 열기</a>
+      </div>
     </div>
-  </header>
-
-  <!-- BODY -->
-  <main class="app-body" id="mainBody">
-
-    <!-- ── HOME SCREEN ── -->
-    <div class="screen active" id="screenHome">
-
-      <div class="topic-section">
-        <div class="section-label">오늘의 주제</div>
-        <div class="chips" id="chipContainer">
-          <button class="chip active" data-topic="인문/언어학">🧠 인문/언어학</button>
-          <button class="chip" data-topic="철학">💡 철학</button>
-          <button class="chip" data-topic="과학">🔬 과학</button>
-          <button class="chip" data-topic="예술/음악">🎨 예술/음악</button>
-          <button class="chip" data-topic="사회문화">🌏 사회문화</button>
-          <button class="chip" data-topic="random">🎲 랜덤</button>
-        </div>
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div class="setup-step-text">
+        <b>Create Key</b> 버튼 클릭 후<br>
+        키 복사 (<b>sk-ant-</b> 로 시작)
       </div>
-
-      <button class="gen-btn" id="genBtn" onclick="generateLesson()">
-        <span class="pulse-ring">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/>
-            <path d="M19 15l.75 2.25L22 18l-2.25.75L19 21l-.75-2.25L16 18l2.25-.75z"/>
-          </svg>
-        </span>
-        오늘의 학습 생성하기
-      </button>
-
-      <div id="loadingArea" style="display:none">
-        <div class="loading-card">
-          <div class="spinner"></div>
-          <div class="loading-title">AI가 학습 자료 생성 중...</div>
-          <div class="loading-sub" id="loadingMsg">8단계 모델에 맞춰 준비 중</div>
-        </div>
-      </div>
-
-      <div id="errorArea" style="display:none">
-        <div class="error-card">
-          <span>⚠️</span>
-          <span id="errorMsg">오류가 발생했습니다. 다시 시도해주세요.</span>
-        </div>
-      </div>
-
-      <!-- Lesson result shown here on home -->
-      <div id="lessonArea" style="display:none">
-        <!-- Lesson header -->
-        <div class="lesson-header" id="lessonHeader"></div>
-
-        <!-- Step tabs -->
-        <div class="step-tabs" id="stepTabs"></div>
-
-        <!-- Step panels -->
-        <div id="stepPanels"></div>
-      </div>
-
-    </div><!-- /screenHome -->
-
-    <!-- ── HISTORY SCREEN ── -->
-    <div class="screen" id="screenHistory">
-      <div class="section-label" style="margin-bottom:12px">학습 기록</div>
-      <div id="historyList"></div>
     </div>
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div class="setup-step-text">
+        아래 칸에 붙여넣기 후<br>
+        <b>저장하고 시작하기</b> 클릭!
+      </div>
+    </div>
+    <div class="setup-input-wrap">
+      <input class="setup-input" type="password" id="apiKeyInput"
+        placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off"
+        autocapitalize="none" spellcheck="false">
+      <button class="setup-eye" id="eyeBtn" onclick="toggleEye()">👁️</button>
+    </div>
+    <div class="setup-err" id="setupErr">sk-ant- 로 시작하는 키를 입력해주세요</div>
+    <button class="setup-save-btn" onclick="saveKey()">저장하고 시작하기 →</button>
+  </div>
+</div>
 
-  </main>
+<!-- HEADER -->
+<header class="app-header">
+  <span class="header-icon">📖</span>
+  <div style="flex:1">
+    <h1>헨리의 영어 학습</h1>
+    <div class="header-sub">AI 기반 8단계 심층 학습</div>
+  </div>
+  <button class="key-btn" onclick="resetKey()">🔑 키변경</button>
+</header>
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" id="navHome" onclick="switchNav('Home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>홈</span>
+<!-- BODY -->
+<main class="app-body" id="mainBody">
+  <div class="screen active" id="screenHome">
+    <div class="topic-section">
+      <div class="section-label">오늘의 주제</div>
+      <div class="chips">
+        <button class="chip active" data-topic="인문/언어학">🧠 인문/언어학</button>
+        <button class="chip" data-topic="철학">💡 철학</button>
+        <button class="chip" data-topic="과학">🔬 과학</button>
+        <button class="chip" data-topic="예술/음악">🎨 예술/음악</button>
+        <button class="chip" data-topic="사회문화">🌏 사회문화</button>
+        <button class="chip" data-topic="random">🎲 랜덤</button>
+      </div>
+    </div>
+    <button class="gen-btn" id="genBtn" onclick="generateLesson()">
+      <span class="pulse-ring">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px">
+          <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/>
+          <path d="M19 15l.75 2.25L22 18l-2.25.75L19 21l-.75-2.25L16 18l2.25-.75z"/>
+        </svg>
+      </span>
+      오늘의 학습 생성하기
     </button>
-    <button class="nav-item" id="navHistory" onclick="switchNav('History')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span>기록</span>
-    </button>
-  </nav>
+    <div id="loadingArea" style="display:none">
+      <div class="loading-card">
+        <div class="spinner"></div>
+        <div class="loading-title">AI가 학습 자료 생성 중...</div>
+        <div class="loading-sub" id="loadingMsg">8단계 모델에 맞춰 준비 중</div>
+      </div>
+    </div>
+    <div id="errorArea" style="display:none">
+      <div class="error-card">
+        <span>⚠️</span><span id="errorMsg">오류가 발생했습니다.</span>
+      </div>
+    </div>
+    <div id="lessonArea" style="display:none">
+      <div class="lesson-header" id="lessonHeader"></div>
+      <div class="step-tabs" id="stepTabs"></div>
+      <div id="stepPanels"></div>
+    </div>
+  </div>
 
-</div><!-- /app -->
+  <div class="screen" id="screenHistory">
+    <div class="section-label" style="margin-bottom:12px">학습 기록</div>
+    <div id="historyList"></div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" id="navHome" onclick="switchNav('Home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>홈</span>
+  </button>
+  <button class="nav-item" id="navHistory" onclick="switchNav('History')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>기록</span>
+  </button>
+</nav>
+</div>
 
 <script>
-// ── STATE ──
-let selectedTopic = '인문/언어학';
-let currentLesson = null;
-let currentStep = 0;
-const history_lessons = JSON.parse(localStorage.getItem('henry_lessons') || '[]');
+// ── API KEY ──
+let API_KEY = localStorage.getItem('henry_api_key') || '';
+(function init(){
+  if(API_KEY && API_KEY.startsWith('sk-ant-'))
+    document.getElementById('setupOverlay').style.display='none';
+})();
 
-// ── CHIPS ──
-document.querySelectorAll('.chip').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-    selectedTopic = c.dataset.topic;
+function toggleEye(){
+  const i=document.getElementById('apiKeyInput'),b=document.getElementById('eyeBtn');
+  if(i.type==='password'){i.type='text';b.textContent='🙈';}
+  else{i.type='password';b.textContent='👁️';}
+}
+function saveKey(){
+  const v=document.getElementById('apiKeyInput').value.trim();
+  const err=document.getElementById('setupErr');
+  if(!v.startsWith('sk-ant-')){err.style.display='block';return;}
+  err.style.display='none';
+  API_KEY=v;
+  localStorage.setItem('henry_api_key',v);
+  document.getElementById('setupOverlay').style.display='none';
+}
+function resetKey(){
+  if(!confirm('API 키를 다시 설정할까요?'))return;
+  localStorage.removeItem('henry_api_key');
+  API_KEY='';
+  document.getElementById('apiKeyInput').value='';
+  document.getElementById('setupOverlay').style.display='flex';
+}
+
+// ── STATE ──
+let selectedTopic='인문/언어학',currentLesson=null,currentStep=0;
+const history_lessons=JSON.parse(localStorage.getItem('henry_lessons')||'[]');
+
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');selectedTopic=c.dataset.topic;
   });
 });
 
-// ── NAV ──
-function switchNav(screen) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen' + screen).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('nav' + screen).classList.add('active');
-  if (screen === 'History') renderHistory();
+function switchNav(s){
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen'+s).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('nav'+s).classList.add('active');
+  if(s==='History')renderHistory();
 }
 
-// ── LOADING MESSAGES ──
-const loadMsgs = [
-  '주제를 분석하고 있습니다...',
-  '영어 문장을 작성하고 있습니다...',
-  '발음 가이드 준비 중...',
-  '어휘 테이블 구성 중...',
-  '구문 분석 준비 중...',
-  '영작 예문 만드는 중...',
-  '거의 다 됐습니다...'
-];
+const loadMsgs=['주제를 분석하고 있습니다...','영어 문장을 작성하고 있습니다...','발음 가이드 준비 중...','어휘 테이블 구성 중...','구문 분석 준비 중...','영작 예문 만드는 중...','거의 다 됐습니다...'];
 
-// ── GENERATE ──
-async function generateLesson() {
-  const btn = document.getElementById('genBtn');
-  const loading = document.getElementById('loadingArea');
-  const error = document.getElementById('errorArea');
-  const lessonArea = document.getElementById('lessonArea');
-
-  btn.disabled = true;
-  loading.style.display = 'block';
-  error.style.display = 'none';
-  lessonArea.style.display = 'none';
-
-  let mi = 0;
-  const interval = setInterval(() => {
-    document.getElementById('loadingMsg').textContent = loadMsgs[mi % loadMsgs.length];
-    mi++;
-  }, 1600);
-
-  const topicLabel = selectedTopic === 'random'
-    ? '인문, 철학, 과학, 예술/음악, 사회문화 중 흥미로운 하나를 자유롭게'
-    : selectedTopic;
-
-  const prompt = `당신은 영어 교육 전문가입니다. 아래 JSON 형식으로 ${topicLabel} 주제의 1분 분량 영어 학습 자료를 생성하세요.
-반드시 JSON만 출력하고 \`\`\`json 같은 마크다운 코드블록을 절대 포함하지 마세요.
-
-{
-  "topic_category": "주제명",
-  "emoji": "주제를 나타내는 이모지 1개",
-  "title_en": "영어 제목 (The XXX of YYY 형식 권장)",
-  "title_ko": "한국어 부제",
-  "sentences": [
-    {"en": "영어문장", "ko": "한국어해석"}
-  ],
-  "listening": [
-    {"num": "01", "logic": "논리구조", "script": "발음기호 포함 스크립트", "guide": "한글 발음 가이드"}
-  ],
-  "vocabulary": [
-    {"word": "단어", "meaning": "뜻", "pronunciation": "한글발음", "example": "예문", "collocation": "콜로케이션 설명"}
-  ],
-  "analysis": [
-    {"num": "1", "chunk": "구문 청크", "translation": "해석", "syntax": "문법 포인트"}
-  ],
-  "phonetics": {
-    "liaison": "연음 설명",
-    "reduction": "약화 설명",
-    "stress": "강세 설명"
-  },
-  "writing": [
-    {"level": "기초", "ko": "한국어", "en": "영어"},
-    {"level": "심화", "ko": "한국어", "en": "영어"},
-    {"level": "완성", "ko": "한국어", "en": "영어"}
-  ],
-  "qa": {"question": "비판적 사고 질문", "answer": "모범 답변"},
-  "metacognition": {
-    "pronunciation_check": "발음 체크",
-    "syntax_check": "구문 체크",
-    "summary_quote": "핵심 요약 명언"
-  }
-}
-
-규칙: 문장 5개, 어휘 5개, 구문분석 12-15개. 고급 문법 패턴 포함.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+async function generateLesson(){
+  if(!API_KEY){resetKey();return;}
+  const btn=document.getElementById('genBtn');
+  const loading=document.getElementById('loadingArea');
+  const error=document.getElementById('errorArea');
+  const la=document.getElementById('lessonArea');
+  btn.disabled=true;loading.style.display='block';error.style.display='none';la.style.display='none';
+  let mi=0;
+  const iv=setInterval(()=>{document.getElementById('loadingMsg').textContent=loadMsgs[mi++%loadMsgs.length];},1600);
+  const tl=selectedTopic==='random'?'인문, 철학, 과학, 예술/음악, 사회문화 중 흥미로운 하나를 자유롭게':selectedTopic;
+  const prompt=`당신은 영어 교육 전문가입니다. 아래 JSON 형식으로 ${tl} 주제의 1분 분량 영어 학습 자료를 생성하세요.
+반드시 JSON만 출력하고 마크다운 코드블록을 절대 포함하지 마세요.
+{"topic_category":"주제명","emoji":"이모지1개","title_en":"영어제목","title_ko":"한국어부제","sentences":[{"en":"영어문장","ko":"한국어해석"}],"listening":[{"num":"01","logic":"논리구조","script":"발음기호포함스크립트","guide":"한글발음가이드"}],"vocabulary":[{"word":"단어","meaning":"뜻","pronunciation":"한글발음","example":"예문","collocation":"콜로케이션설명"}],"analysis":[{"num":"1","chunk":"구문청크","translation":"해석","syntax":"문법포인트"}],"phonetics":{"liaison":"연음설명","reduction":"약화설명","stress":"강세설명"},"writing":[{"level":"기초","ko":"한국어","en":"영어"},{"level":"심화","ko":"한국어","en":"영어"},{"level":"완성","ko":"한국어","en":"영어"}],"qa":{"question":"비판적사고질문","answer":"모범답변"},"metacognition":{"pronunciation_check":"발음체크","syntax_check":"구문체크","summary_quote":"핵심요약명언"}}
+규칙: 문장5개, 어휘5개, 구문분석12-15개. 고급문법패턴포함.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
     });
-    clearInterval(interval);
-    const data = await res.json();
-    const raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
-    const lesson = JSON.parse(raw);
-    lesson.generatedAt = new Date().toISOString();
-    lesson.topicSelected = selectedTopic;
-
-    currentLesson = lesson;
-    currentStep = 0;
-
-    // save to history
-    history_lessons.unshift(lesson);
-    if (history_lessons.length > 30) history_lessons.pop();
-    localStorage.setItem('henry_lessons', JSON.stringify(history_lessons));
-
-    loading.style.display = 'none';
-    renderLesson(lesson);
-    lessonArea.style.display = 'block';
-    btn.disabled = false;
-
-    // scroll to lesson
-    setTimeout(() => {
-      document.getElementById('lessonArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
-
-  } catch(e) {
-    clearInterval(interval);
-    loading.style.display = 'none';
-    document.getElementById('errorMsg').textContent = '생성 오류: ' + e.message;
-    error.style.display = 'block';
-    btn.disabled = false;
+    clearInterval(iv);
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    const raw=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
+    const lesson=JSON.parse(raw);
+    lesson.generatedAt=new Date().toISOString();lesson.topicSelected=selectedTopic;
+    currentLesson=lesson;currentStep=0;
+    history_lessons.unshift(lesson);if(history_lessons.length>30)history_lessons.pop();
+    localStorage.setItem('henry_lessons',JSON.stringify(history_lessons));
+    loading.style.display='none';renderLesson(lesson);la.style.display='block';btn.disabled=false;
+    setTimeout(()=>document.getElementById('lessonArea').scrollIntoView({behavior:'smooth',block:'start'}),150);
+  }catch(e){
+    clearInterval(iv);loading.style.display='none';
+    document.getElementById('errorMsg').textContent='생성 오류: '+e.message;
+    error.style.display='block';btn.disabled=false;
   }
 }
 
-// ── RENDER LESSON ──
-function renderLesson(d) {
-  // Header
-  document.getElementById('lessonHeader').innerHTML = `
-    <div class="lesson-badge">${d.emoji || '📖'} ${d.topic_category}</div>
-    <div class="lesson-title-en">${d.title_en}</div>
-    <div class="lesson-title-ko">${d.title_ko}</div>
-  `;
-
-  const stepLabels = ['1.문장','2.청취','3.어휘','4.구문','5.발음','6.영작','7.독해','8.복습'];
-
-  // Tabs
-  const tabsEl = document.getElementById('stepTabs');
-  tabsEl.innerHTML = stepLabels.map((lbl, i) =>
-    `<button class="step-tab ${i===0?'active':''}" onclick="switchStep(${i})">${lbl}</button>`
-  ).join('');
-
-  // Panels
-  const panelsEl = document.getElementById('stepPanels');
-  panelsEl.innerHTML = `
-    ${makeStep0(d)}
-    ${makeStep1(d)}
-    ${makeStep2(d)}
-    ${makeStep3(d)}
-    ${makeStep4(d)}
-    ${makeStep5(d)}
-    ${makeStep6(d)}
-    ${makeStep7(d)}
-  `;
-
+function renderLesson(d){
+  document.getElementById('lessonHeader').innerHTML=`<div class="lesson-badge">${d.emoji||'📖'} ${d.topic_category}</div><div class="lesson-title-en">${d.title_en}</div><div class="lesson-title-ko">${d.title_ko}</div>`;
+  const labels=['1.문장','2.청취','3.어휘','4.구문','5.발음','6.영작','7.독해','8.복습'];
+  document.getElementById('stepTabs').innerHTML=labels.map((l,i)=>`<button class="step-tab ${i===0?'active':''}" onclick="switchStep(${i})">${l}</button>`).join('');
+  document.getElementById('stepPanels').innerHTML=makeStep0(d)+makeStep1(d)+makeStep2(d)+makeStep3(d)+makeStep4(d)+makeStep5(d)+makeStep6(d)+makeStep7(d);
   document.querySelector('.step-panel').classList.add('active');
 }
-
-function switchStep(n) {
-  currentStep = n;
-  document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i === n));
-  document.querySelectorAll('.step-tab').forEach((t, i) => t.classList.toggle('active', i === n));
-  document.getElementById('stepTabs').children[n].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+function switchStep(n){
+  currentStep=n;
+  document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.step-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  document.getElementById('stepTabs').children[n].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
 }
+function nextStep(){if(currentStep<7)switchStep(currentStep+1);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-function nextStep() {
-  if (currentStep < 7) switchStep(currentStep + 1);
-}
+function makeStep0(d){return `<div class="step-panel"><div class="card"><div class="card-label">📄 전체 문장</div><div class="en-text">${esc(d.sentences.map(s=>s.en).join(' '))}</div><div class="ko-text">${esc(d.sentences.map(s=>s.ko).join(' '))}</div></div><button class="next-step-btn" onclick="nextStep()">다음 단계: 청취 훈련 →</button></div>`;}
+function makeStep1(d){return `<div class="step-panel"><div class="card"><div class="card-label">🎧 청취 최적화 & 구문 체계화</div>${d.listening.map(s=>`<div class="sblock"><div class="sblock-num">Sentence ${esc(s.num)}</div><div class="sblock-logic">Logic: ${esc(s.logic)}</div><div class="sblock-script">${esc(s.script)}</div><div class="sblock-guide">${esc(s.guide)}</div></div>`).join('')}</div><button class="next-step-btn" onclick="nextStep()">다음 단계: 어휘 학습 →</button></div>`;}
+function makeStep2(d){return `<div class="step-panel"><div class="card"><div class="card-label">📚 어휘의 다각적 접근</div>${d.vocabulary.map(v=>`<div class="vocab-row"><div class="vocab-top"><span class="vocab-word">${esc(v.word)}</span><span class="vocab-pron">${esc(v.pronunciation)}</span><span class="vocab-meaning">${esc(v.meaning)}</span></div><div class="vocab-example">${esc(v.example)}</div><div class="vocab-collocate">${esc(v.collocation)}</div></div>`).join('')}</div><button class="next-step-btn" onclick="nextStep()">다음 단계: 구문 분석 →</button></div>`;}
+function makeStep3(d){return `<div class="step-panel"><div class="card"><div class="card-label">🔍 논리적 구문 해체</div>${d.analysis.map(a=>`<div class="analysis-row"><div class="analysis-num">${esc(a.num)}</div><div class="analysis-content"><div class="analysis-chunk">${esc(a.chunk)}</div><div class="analysis-tr">${esc(a.translation)}</div><span class="analysis-syntax">${esc(a.syntax)}</span></div></div>`).join('')}</div><button class="next-step-btn" onclick="nextStep()">다음 단계: 발음 훈련 →</button></div>`;}
+function makeStep4(d){const p=d.phonetics;return `<div class="step-panel"><div class="card"><div class="card-label">🗣️ 발음 밀착 훈련</div><div class="phon-row"><div class="phon-icon">〜</div><div><div class="phon-label">연음 주의</div><div class="phon-text">${esc(p.liaison)}</div></div></div><div class="phon-row"><div class="phon-icon">↓</div><div><div class="phon-label">약화 주의</div><div class="phon-text">${esc(p.reduction)}</div></div></div><div class="phon-row"><div class="phon-icon">★</div><div><div class="phon-label">강세 연습</div><div class="phon-text">${esc(p.stress)}</div></div></div></div><button class="next-step-btn" onclick="nextStep()">다음 단계: 영작 연습 →</button></div>`;}
+function makeStep5(d){const ic=['🌱','🌿','🌳'];return `<div class="step-panel"><div class="card"><div class="card-label">✍️ 확장형 영작 연습</div>${d.writing.map((w,i)=>`<div class="writing-row"><div class="writing-level">${ic[i]} ${esc(w.level)}</div><div class="writing-ko">${esc(w.ko)}</div><div class="writing-en">→ ${esc(w.en)}</div></div>`).join('')}</div><button class="next-step-btn" onclick="nextStep()">다음 단계: 비판적 독해 →</button></div>`;}
+function makeStep6(d){return `<div class="step-panel"><div class="card"><div class="card-label">💬 추론 및 비판적 독해</div><div class="qa-q">Q: ${esc(d.qa.question)}</div><div class="qa-a">A: ${esc(d.qa.answer)}</div></div><button class="next-step-btn" onclick="nextStep()">다음 단계: 메타인지 복습 →</button></div>`;}
+function makeStep7(d){const m=d.metacognition;return `<div class="step-panel"><div class="card"><div class="card-label">🧠 메타인지 복습</div><div class="meta-row"><div class="meta-dot"></div><div><div class="meta-label">발음 체크</div><div class="meta-text">${esc(m.pronunciation_check)}</div></div></div><div class="meta-row"><div class="meta-dot"></div><div><div class="meta-label">구문 체크</div><div class="meta-text">${esc(m.syntax_check)}</div></div></div></div><div class="summary-banner"><div class="summary-label">오늘의 핵심 요약</div><div class="summary-quote">"${esc(m.summary_quote)}"</div></div><button class="gen-btn" style="margin-top:14px" onclick="document.getElementById('mainBody').scrollTo({top:0,behavior:'smooth'});generateLesson()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>새 주제로 다시 학습하기</button></div>`;}
 
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function makeStep0(d) {
-  const sentences = d.sentences.map(s => s.en).join(' ');
-  const translations = d.sentences.map(s => s.ko).join(' ');
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">📄 전체 문장</div>
-      <div class="en-text">${esc(sentences)}</div>
-      <div class="ko-text">${esc(translations)}</div>
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 청취 훈련 →</button>
-  </div>`;
-}
-
-function makeStep1(d) {
-  const blocks = d.listening.map(s => `
-    <div class="sblock">
-      <div class="sblock-num">Sentence ${esc(s.num)}</div>
-      <div class="sblock-logic">Logic: ${esc(s.logic)}</div>
-      <div class="sblock-script">${esc(s.script)}</div>
-      <div class="sblock-guide">${esc(s.guide)}</div>
-    </div>`).join('');
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">🎧 청취 최적화 & 구문 체계화</div>
-      ${blocks}
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 어휘 학습 →</button>
-  </div>`;
-}
-
-function makeStep2(d) {
-  const rows = d.vocabulary.map(v => `
-    <div class="vocab-row">
-      <div class="vocab-top">
-        <span class="vocab-word">${esc(v.word)}</span>
-        <span class="vocab-pron">${esc(v.pronunciation)}</span>
-        <span class="vocab-meaning">${esc(v.meaning)}</span>
-      </div>
-      <div class="vocab-example">${esc(v.example)}</div>
-      <div class="vocab-collocate">${esc(v.collocation)}</div>
-    </div>`).join('');
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">📚 어휘의 다각적 접근</div>
-      ${rows}
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 구문 분석 →</button>
-  </div>`;
-}
-
-function makeStep3(d) {
-  const rows = d.analysis.map(a => `
-    <div class="analysis-row">
-      <div class="analysis-num">${esc(a.num)}</div>
-      <div class="analysis-content">
-        <div class="analysis-chunk">${esc(a.chunk)}</div>
-        <div class="analysis-tr">${esc(a.translation)}</div>
-        <span class="analysis-syntax">${esc(a.syntax)}</span>
-      </div>
-    </div>`).join('');
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">🔍 논리적 구문 해체</div>
-      ${rows}
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 발음 훈련 →</button>
-  </div>`;
-}
-
-function makeStep4(d) {
-  const p = d.phonetics;
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">🗣️ 발음 밀착 훈련</div>
-      <div class="phon-row">
-        <div class="phon-icon">〜</div>
-        <div><div class="phon-label">연음 주의</div><div class="phon-text">${esc(p.liaison)}</div></div>
-      </div>
-      <div class="phon-row">
-        <div class="phon-icon">↓</div>
-        <div><div class="phon-label">약화 주의</div><div class="phon-text">${esc(p.reduction)}</div></div>
-      </div>
-      <div class="phon-row">
-        <div class="phon-icon">★</div>
-        <div><div class="phon-label">강세 연습</div><div class="phon-text">${esc(p.stress)}</div></div>
-      </div>
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 영작 연습 →</button>
-  </div>`;
-}
-
-function makeStep5(d) {
-  const icons = ['🌱','🌿','🌳'];
-  const rows = d.writing.map((w, i) => `
-    <div class="writing-row">
-      <div class="writing-level">${icons[i]} ${esc(w.level)}</div>
-      <div class="writing-ko">${esc(w.ko)}</div>
-      <div class="writing-en">→ ${esc(w.en)}</div>
-    </div>`).join('');
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">✍️ 확장형 영작 연습</div>
-      ${rows}
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 비판적 독해 →</button>
-  </div>`;
-}
-
-function makeStep6(d) {
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">💬 추론 및 비판적 독해</div>
-      <div class="qa-q">Q: ${esc(d.qa.question)}</div>
-      <div class="qa-a">A: ${esc(d.qa.answer)}</div>
-    </div>
-    <button class="next-step-btn" onclick="nextStep()">다음 단계: 메타인지 복습 →</button>
-  </div>`;
-}
-
-function makeStep7(d) {
-  const m = d.metacognition;
-  return `<div class="step-panel">
-    <div class="card">
-      <div class="card-label">🧠 메타인지 복습</div>
-      <div class="meta-row">
-        <div class="meta-dot"></div>
-        <div><div class="meta-label">발음 체크</div><div class="meta-text">${esc(m.pronunciation_check)}</div></div>
-      </div>
-      <div class="meta-row">
-        <div class="meta-dot"></div>
-        <div><div class="meta-label">구문 체크</div><div class="meta-text">${esc(m.syntax_check)}</div></div>
-      </div>
-    </div>
-    <div class="summary-banner">
-      <div class="summary-label">오늘의 핵심 요약</div>
-      <div class="summary-quote">"${esc(m.summary_quote)}"</div>
-    </div>
-    <button class="gen-btn" style="margin-top:14px" onclick="document.getElementById('mainBody').scrollTo({top:0,behavior:'smooth'});generateLesson()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-      새 주제로 다시 학습하기
-    </button>
-  </div>`;
-}
-
-// ── HISTORY ──
-const topicEmojis = {
-  '인문/언어학':'🧠','철학':'💡','과학':'🔬','예술/음악':'🎨','사회문화':'🌏','random':'🎲'
-};
-
-function renderHistory() {
-  const el = document.getElementById('historyList');
-  if (history_lessons.length === 0) {
-    el.innerHTML = `<div class="empty-state">
-      <div class="empty-emoji">📭</div>
-      <div class="empty-title">아직 학습 기록이 없습니다</div>
-      <div class="empty-sub">홈에서 첫 번째 학습을<br>시작해보세요!</div>
-    </div>`;
-    return;
-  }
-  el.innerHTML = history_lessons.map((l, i) => {
-    const date = new Date(l.generatedAt);
-    const dateStr = `${date.getMonth()+1}월 ${date.getDate()}일 ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
-    const emoji = l.emoji || topicEmojis[l.topicSelected] || '📖';
-    return `<div class="history-item" onclick="loadFromHistory(${i})">
-      <div class="history-circle">${emoji}</div>
-      <div style="flex:1;min-width:0">
-        <div class="history-title">${esc(l.title_en)}</div>
-        <div class="history-sub">${esc(l.topic_category)} · ${esc(l.title_ko)}</div>
-        <div class="history-date">${dateStr}</div>
-      </div>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--text-tertiary);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>`;
+const topicEmojis={'인문/언어학':'🧠','철학':'💡','과학':'🔬','예술/음악':'🎨','사회문화':'🌏','random':'🎲'};
+function renderHistory(){
+  const el=document.getElementById('historyList');
+  if(!history_lessons.length){el.innerHTML=`<div class="empty-state"><div class="empty-emoji">📭</div><div class="empty-title">아직 학습 기록이 없습니다</div><div class="empty-sub">홈에서 첫 번째 학습을<br>시작해보세요!</div></div>`;return;}
+  el.innerHTML=history_lessons.map((l,i)=>{
+    const d=new Date(l.generatedAt);
+    const ds=`${d.getMonth()+1}월 ${d.getDate()}일 ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const e=l.emoji||topicEmojis[l.topicSelected]||'📖';
+    return `<div class="history-item" onclick="loadFromHistory(${i})"><div class="history-circle">${e}</div><div style="flex:1;min-width:0"><div class="history-title">${esc(l.title_en)}</div><div class="history-sub">${esc(l.topic_category)} · ${esc(l.title_ko)}</div><div class="history-date">${ds}</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--text-tertiary);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>`;
   }).join('');
 }
-
-function loadFromHistory(idx) {
-  const lesson = history_lessons[idx];
-  currentLesson = lesson;
-  currentStep = 0;
-  switchNav('Home');
-  renderLesson(lesson);
-  document.getElementById('lessonArea').style.display = 'block';
-  setTimeout(() => {
-    document.getElementById('lessonArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 200);
+function loadFromHistory(idx){
+  const l=history_lessons[idx];currentLesson=l;currentStep=0;
+  switchNav('Home');renderLesson(l);
+  document.getElementById('lessonArea').style.display='block';
+  setTimeout(()=>document.getElementById('lessonArea').scrollIntoView({behavior:'smooth',block:'start'}),200);
 }
 </script>
 </body>
